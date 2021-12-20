@@ -60,14 +60,13 @@ sub fit {
                     $matches++;
                 } else {
                     my $fail = 0;
-                    foreach my $si (keys %solved) {
-                        if(exists($solved{$si})) {
-                            my ($sx, $sy, $sz) = split(/ /, $solved{$si});
-                            if (abs($sx - $x) < 1000 && abs($sy - $y) < 1000 && abs($sz - $z) < 1000) {
-                                $fail = 1;
-                                last;
-                            }
-                        }
+                    for (my $si = 0; $si <= $#solvedX; $si++) {
+                        if (abs($solvedX[$si] - $x) < 1000 && 
+                            abs($solvedY[$si] - $y) < 1000 && 
+                            abs($solvedZ[$si] - $z) < 1000) {
+                            $fail = 1;
+                            last;
+                       }
                     }
                     if ($fail) {
                         last;
@@ -77,6 +76,9 @@ sub fit {
             # if matches is >=12, assume correct
             if ($matches >= 12) {
                 print "$xoff $yoff $zoff\n";
+                push(@solvedX, $xoff);
+                push(@solvedY, $yoff);
+                push(@solvedZ, $zoff);
                 # add beacons to final, return location
                 foreach my $k (keys %beacons) {
                     my ($x, $y, $z) = split(/,/, $k);
@@ -140,6 +142,9 @@ foreach $key (keys %{$beacons[0]}) {
     $final{$key} = 1;
 }
 $solved{0} = "0 0 0";
+@solvedX  = (0);
+@solvedY  = (0);
+@solvedZ  = (0);
 
 $unsolved = $#beacons;
 while ($unsolved) {
